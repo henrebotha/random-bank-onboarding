@@ -61,6 +61,33 @@
 			<artifactId>spring-boot-starter-webmvc-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.openapitools</groupId>
+			<artifactId>openapi-generator-maven-plugin</artifactId>
+			<version>7.25.0</version>
+			<exclusions>
+				<!--CVE-2025-67030-->
+				<exclusion>
+					<groupId>org.codehaus.plexus</groupId>
+					<artifactId>plexus-utils</artifactId>
+				</exclusion>
+				<!--CVE-2021-29425, CVE-2024-47554-->
+				<exclusion>
+					<groupId>commons-io</groupId>
+					<artifactId>commons-io</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.codehaus.plexus</groupId>
+			<artifactId>plexus-utils</artifactId>
+			<version>4.0.3</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.22.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>

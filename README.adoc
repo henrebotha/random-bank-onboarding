@@ -1,0 +1,11 @@
+= Random Bank Onboarding Service
+:experimental:
+
+This repo contains the source for the Onboarding service, a REST API that allows users to register online at the bank.
+
+== Development
+
+[source,shell]
+----
+mvn test
+----

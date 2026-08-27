@@ -1,0 +1,17 @@
+openapi: 3.1.0
+info:
+  title: Onboarding
+  description: Service for user registration
+  version: 1.0.0
+servers:
+  - url: 'https://localhost:8080'
+paths:
+  /register:
+    post:
+      summary: Create a new user.
+  /login:
+    get:
+      summary: Log in a user.
+  /overview:
+    get:
+      summary: Show an overview of the user.

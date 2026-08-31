@@ -4,6 +4,7 @@ import org.iban4j.CountryCode;
 import org.iban4j.Iban;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -14,51 +15,62 @@ import java.util.UUID;
 @Service
 public class UserServiceImpl implements UserService {
     private final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
+    @Autowired
+    private UserRepository repository;
 
     private final List<User> users = new ArrayList<>();
 
     private static final String DEFAULT_PASSWORD = "1234";
     private static final String BANK_CODE = "RNDB";
 
+    @Autowired
+    public UserServiceImpl(UserRepository repository) {
+        this.repository = repository;
+        this();
+    }
+
     public UserServiceImpl() {
         // Sample data for users
-        users.add(new User(
-                "77777777-7777-7777-7777-777777777777",
-                "alice",
-                DEFAULT_PASSWORD,
-                "Alice",
-                "Bakenessergracht 87, 2011JV",
-                "1990-01-20",
-                "asdf",
-                AccountType.CURRENT,
-                0
-        ));
-        users.add(new User(
-                "88888888-8888-8888-8888-888888888888",
-                "bobert",
-                DEFAULT_PASSWORD,
-                "Bob",
-                "Bakenessergracht 83, 2011JV",
-                "1992-05-17",
-                "asdg",
-                AccountType.CURRENT,
-                0
-        ));
-        users.add(new User(
-                "99999999-9999-9999-9999-999999999999",
-                "carolx",
-                DEFAULT_PASSWORD,
-                "Carol",
-                "Bakenessergracht 81, 2011JV",
-                "1981-12-20",
-                "asdj",
-                AccountType.SAVINGS,
-                0
-        ));
+        List<User> newUsers = List.of(
+                new User(
+                        UUID.fromString("77777777-7777-7777-7777-777777777777"),
+                        "alice",
+                        DEFAULT_PASSWORD,
+                        "Alice",
+                        "Bakenessergracht 87, 2011JV",
+                        "1990-01-20",
+                        "asdf",
+                        AccountType.CURRENT,
+                        0
+                ), new User(
+                        UUID.fromString("88888888-8888-8888-8888-888888888888"),
+                        "bobert",
+                        DEFAULT_PASSWORD,
+                        "Bob",
+                        "Bakenessergracht 83, 2011JV",
+                        "1992-05-17",
+                        "asdg",
+                        AccountType.CURRENT,
+                        0
+                ), new User(
+                        UUID.fromString("99999999-9999-9999-9999-999999999999"),
+                        "carolx",
+                        DEFAULT_PASSWORD,
+                        "Carol",
+                        "Bakenessergracht 81, 2011JV",
+                        "1981-12-20",
+                        "asdj",
+                        AccountType.SAVINGS,
+                        0
+                )
+        );
+        users.addAll(newUsers);
+
+        logger.info("Users in db: {}", findAll());
     }
 
     @Override
-    public User createUser(CreateUserDTO user) {
+    public User create(CreateUserDTO user) {
         // Validate:
         //   username must be unique
         //   address must be NL/BE
@@ -88,7 +100,7 @@ public class UserServiceImpl implements UserService {
             throw new UserAlreadyExistsException();
         }
 
-        String newUuid = UUID.randomUUID().toString();
+        UUID newUuid = UUID.randomUUID();
 
         String iban = new Iban.Builder().countryCode(country).bankCode(BANK_CODE).buildRandom().toString();
 
@@ -108,22 +120,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> findAllUsers() {
-        return users;
+    public List<User> findAll() {
+        return repository.findAll();
     }
 
     @Override
-    public User findUserByUsername(String username) {
-        return users.stream().filter(user -> user.username().equals(username)).findFirst().orElse(null);
+    public User findByUsername(String username) {
+        return repository.findByUsername(username);
     }
 
     @Override
-    public User findUserById(String id) {
-        return users.stream().filter(user -> user.id().equals(id)).findFirst().orElse(null);
-    }
-
-    @Override
-    public void deleteAllUsers() {
-        users.clear();
+    public User findById(UUID id) {
+        return repository.findById(id).orElse(null);
     }
 }

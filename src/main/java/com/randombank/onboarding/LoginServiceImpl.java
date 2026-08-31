@@ -18,7 +18,7 @@ public class LoginServiceImpl implements LoginService {
 
     @Override
     public User login(String username, String password) {
-        User user = userService.findUserByUsername(username);
+        User user = userService.findByUsername(username);
 
         if (user == null) {
             throw new UserNotFoundException();

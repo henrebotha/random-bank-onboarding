@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 public class UserController {
@@ -38,13 +39,13 @@ public class UserController {
         //   default password
 
         logger.info("/register request: {}", user.toString());
-        return userService.createUser(user);
+        return userService.create(user);
     }
 
     @GetMapping("/overview/{id}")
-    public User overview(@PathVariable String id) {
+    public User overview(@PathVariable UUID id) {
         logger.info("/overview request: {}", id);
-        return userService.findUserById(id);
+        return userService.findById(id);
     }
 
     @GetMapping("/login")

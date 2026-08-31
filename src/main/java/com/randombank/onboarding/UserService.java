@@ -1,15 +1,14 @@
 package com.randombank.onboarding;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface UserService {
-    User createUser(CreateUserDTO user);
+    User create(CreateUserDTO user);
 
-    List<User> findAllUsers();
+    List<User> findAll();
 
-    User findUserById(String id);
+    User findById(UUID id);
 
-    User findUserByUsername(String username);
-
-    void deleteAllUsers();
+    User findByUsername(String username);
 }

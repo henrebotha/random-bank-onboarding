@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -17,6 +18,8 @@ import java.util.Map;
 
 @RestController
 public class UserController {
+    @Autowired
+    private LoginService loginService;
     @Autowired
     private UserService userService;
 
@@ -36,6 +39,18 @@ public class UserController {
 
         logger.info("/register request: {}", user.toString());
         return userService.createUser(user);
+    }
+
+    @GetMapping("/overview/{id}")
+    public User overview(@PathVariable String id) {
+        logger.info("/overview request: {}", id);
+        return userService.findUserById(id);
+    }
+
+    @GetMapping("/login")
+    public User login(@RequestParam String username, @RequestParam String password) {
+        logger.info("/login request");
+        return loginService.login(username, password);
     }
 
     @ExceptionHandler(value = UserAlreadyExistsException.class)
@@ -68,16 +83,23 @@ public class UserController {
         return body;
     }
 
-    @GetMapping("/overview/{id}")
-    public User overview(@PathVariable String id) {
-        logger.info("/overview request: {}", id);
-        return userService.findUserById(id);
+    @ExceptionHandler(value = IncorrectPasswordException.class)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    private Map<String, String> handleIncorrectPasswordException(
+            IncorrectPasswordException e
+    ) {
+        Map<String, String> body = new HashMap<>();
+        body.put("error", e.getMessage());
+        return body;
     }
 
-    @GetMapping("/login")
-    public User login() {
-        logger.info("/login request");
-        // return userService.login();
-        return null;
+    @ExceptionHandler(value = UserNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    private Map<String, String> handleUserNotFoundException(
+            UserNotFoundException e
+    ) {
+        Map<String, String> body = new HashMap<>();
+        body.put("error", e.getMessage());
+        return body;
     }
 }

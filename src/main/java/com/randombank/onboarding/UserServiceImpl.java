@@ -113,6 +113,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User findUserByUsername(String username) {
+        return users.stream().filter(user -> user.username().equals(username)).findFirst().orElse(null);
+    }
+
+    @Override
     public User findUserById(String id) {
         return users.stream().filter(user -> user.id().equals(id)).findFirst().orElse(null);
     }

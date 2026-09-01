@@ -5,11 +5,13 @@ import org.iban4j.Iban;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -17,6 +19,9 @@ public class UserServiceImpl implements UserService {
     private final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
     @Autowired
     private UserRepository repository;
+
+    @Value("${random-bank-onboarding.valid-countries}")
+    private List<String> validCountries;
 
     private final List<User> users = new ArrayList<>();
 
@@ -80,14 +85,12 @@ public class UserServiceImpl implements UserService {
         //   default password
 
         logger.info("User: {}", user);
-        CountryCode country = null;
-        if (user.address().matches(".*\\bNL\\b.*")) {
-            country = CountryCode.NL;
-        } else if (user.address().matches(".*\\bBE\\b.*")) {
-            country = CountryCode.BE;
-        }
+        Optional<String> country = validCountries.stream().filter((String c) -> user.address().matches(".*\\b" + c + "\\b.*")).findFirst();
+        CountryCode countryCode = CountryCode.getByCode(country.orElse(null));
 
-        if (country == null) {
+        logger.info("Found country code {} from input {}", countryCode, user.address());
+
+        if (countryCode == null) {
             throw new UserCountryInvalidException();
         }
 
@@ -102,7 +105,7 @@ public class UserServiceImpl implements UserService {
 
         UUID newUuid = UUID.randomUUID();
 
-        String iban = new Iban.Builder().countryCode(country).bankCode(BANK_CODE).buildRandom().toString();
+        String iban = new Iban.Builder().countryCode(countryCode).bankCode(BANK_CODE).buildRandom().toString();
 
         User newUser = new User(
                 newUuid,

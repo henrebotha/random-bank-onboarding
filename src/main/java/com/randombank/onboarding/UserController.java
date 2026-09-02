@@ -32,7 +32,7 @@ public class UserController {
     ) {
         // Validate:
         //   username must be unique
-        //   address must be NL/BE
+        //   country must be NL/BE
         //   age must be >= 18
         // Generate:
         //   IBAN per NL format
@@ -68,6 +68,16 @@ public class UserController {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     private Map<String, String> handleUserCountryInvalidException(
             UserCountryInvalidException e
+    ) {
+        Map<String, String> body = new HashMap<>();
+        body.put("error", e.getMessage());
+        return body;
+    }
+
+    @ExceptionHandler(value = UserAddressInvalidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    private Map<String, String> handleUserAddressInvalidException(
+            UserAddressInvalidException e
     ) {
         Map<String, String> body = new HashMap<>();
         body.put("error", e.getMessage());

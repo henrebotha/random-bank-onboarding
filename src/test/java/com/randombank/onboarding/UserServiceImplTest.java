@@ -23,7 +23,9 @@ class UserServiceImplTest {
         private final CreateUserDTO createUserDTO = new CreateUserDTO(
                 "joe",
                 "Joseph",
-                "Bakenessergracht 1, 2011JV NL",
+                "NL",
+                "2011JV",
+                "Bakenessergracht 81",
                 "2000-01-01",
                 AccountType.CURRENT
         );
@@ -42,7 +44,9 @@ class UserServiceImplTest {
             CreateUserDTO user = new CreateUserDTO(
                     createUserDTO.username(),
                     createUserDTO.name(),
-                    createUserDTO.address(),
+                    createUserDTO.country(),
+                    createUserDTO.postalCode(),
+                    createUserDTO.streetAddress(),
                     "2020-01-01",
                     createUserDTO.accountType()
             );
@@ -54,7 +58,9 @@ class UserServiceImplTest {
             CreateUserDTO user = new CreateUserDTO(
                     createUserDTO.username(),
                     createUserDTO.name(),
-                    "Bakenessergracht 1, 2011JV FR",
+                    "FR",
+                    createUserDTO.postalCode(),
+                    createUserDTO.streetAddress(),
                     createUserDTO.dateOfBirth(),
                     createUserDTO.accountType()
             );
@@ -66,7 +72,9 @@ class UserServiceImplTest {
             CreateUserDTO user = new CreateUserDTO(
                     "alice",
                     createUserDTO.name(),
-                    createUserDTO.address(),
+                    createUserDTO.country(),
+                    createUserDTO.postalCode(),
+                    createUserDTO.streetAddress(),
                     createUserDTO.dateOfBirth(),
                     createUserDTO.accountType()
             );

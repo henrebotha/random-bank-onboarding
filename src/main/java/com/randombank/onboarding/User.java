@@ -20,8 +20,12 @@ public final class User {
     private String password;
     @Column(nullable = false)
     private String name;
+    @Column(nullable = false, length = 2)
+    private String country;
     @Column(nullable = false)
-    private String address;
+    private String postalCode;
+    @Column(nullable = false)
+    private String streetAddress;
     @Column(nullable = false)
     private String dateOfBirth;
     @Column(nullable = false)
@@ -47,8 +51,16 @@ public final class User {
         this.name = name;
     }
 
-    public void setAddress(String address) {
-        this.address = address;
+    public void setCountry(String country) {
+        this.country = country;
+    }
+
+    public void setPostalCode(String postalCode) {
+        this.postalCode = postalCode;
+    }
+
+    public void setStreetAddress(String streetAddress) {
+        this.streetAddress = streetAddress;
     }
 
     public void setDateOfBirth(String dateOfBirth) {
@@ -75,7 +87,9 @@ public final class User {
             String username,
             String password,
             String name,
-            String address,
+            String country,
+            String postalCode,
+            String streetAddress,
             String dateOfBirth,
             String iban,
             AccountType accountType,
@@ -85,7 +99,9 @@ public final class User {
         this.username = username;
         this.password = password;
         this.name = name;
-        this.address = address;
+        this.country = country;
+        this.postalCode = postalCode;
+        this.streetAddress = streetAddress;
         this.dateOfBirth = dateOfBirth;
         this.iban = iban;
         this.accountType = accountType;
@@ -108,8 +124,16 @@ public final class User {
         return name;
     }
 
-    public String address() {
-        return address;
+    public String country() {
+        return country;
+    }
+
+    public String postalCode() {
+        return postalCode;
+    }
+
+    public String streetAddress() {
+        return streetAddress;
     }
 
     public String dateOfBirth() {
@@ -143,7 +167,10 @@ public final class User {
         ) && Objects.equals(this.password, that.password) && Objects.equals(
                 this.name,
                 that.name
-        ) && Objects.equals(this.address, that.address) && Objects.equals(
+        ) && Objects.equals(this.country, that.country) && Objects.equals(
+                this.postalCode,
+                that.postalCode
+        ) && Objects.equals(this.streetAddress, that.streetAddress) && Objects.equals(
                 this.dateOfBirth,
                 that.dateOfBirth
         ) && Objects.equals(this.iban, that.iban) && Objects.equals(
@@ -154,12 +181,23 @@ public final class User {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, username, password, name, address, dateOfBirth, iban, accountType, accountBalanceCents);
+        return Objects.hash(
+                id,
+                username,
+                password,
+                name,
+                country,
+                postalCode,
+                streetAddress,
+                dateOfBirth,
+                iban,
+                accountType,
+                accountBalanceCents
+        );
     }
 
     @Override
     public String toString() {
-        return "User[" + "id=" + id + ", " + "username=" + username + ", " + "password=" + password + ", " + "name=" + name + ", " + "address=" + address + ", " + "dateOfBirth=" + dateOfBirth + ", " + "iban=" + iban + ", " + "accountType=" + accountType + ", " + "accountBalanceCents=" + accountBalanceCents + ']';
+        return "User[" + "id=" + id + ", " + "username=" + username + ", " + "password=" + password + ", " + "name=" + name + ", " + "country=" + country + "postalCode=" + postalCode + "streetAddress=" + streetAddress + ", " + "dateOfBirth=" + dateOfBirth + ", " + "iban=" + iban + ", " + "accountType=" + accountType + ", " + "accountBalanceCents=" + accountBalanceCents + ']';
     }
-
 }

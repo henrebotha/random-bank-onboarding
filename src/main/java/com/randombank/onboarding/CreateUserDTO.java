@@ -3,7 +3,9 @@ package com.randombank.onboarding;
 public record CreateUserDTO(
         String username,
         String name,
-        String address,
+        String country,
+        String postalCode,
+        String streetAddress,
         String dateOfBirth,
         AccountType accountType
 ) {

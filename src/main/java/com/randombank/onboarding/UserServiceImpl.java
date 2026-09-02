@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -19,6 +18,8 @@ public class UserServiceImpl implements UserService {
     private final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
     @Autowired
     private UserRepository repository;
+    @Autowired
+    private AddressValidationService addressValidationService;
 
     @Value("${random-bank-onboarding.valid-countries}")
     private List<String> validCountries;
@@ -29,8 +30,9 @@ public class UserServiceImpl implements UserService {
     private static final String BANK_CODE = "RNDB";
 
     @Autowired
-    public UserServiceImpl(UserRepository repository) {
+    public UserServiceImpl(UserRepository repository, AddressValidationService addressValidationService) {
         this.repository = repository;
+        this.addressValidationService = addressValidationService;
         this();
     }
 
@@ -42,7 +44,9 @@ public class UserServiceImpl implements UserService {
                         "alice",
                         DEFAULT_PASSWORD,
                         "Alice",
-                        "Bakenessergracht 87, 2011JV",
+                        "NL",
+                        "2011JV",
+                        "Bakenessergracht 87",
                         "1990-01-20",
                         "asdf",
                         AccountType.CURRENT,
@@ -52,7 +56,9 @@ public class UserServiceImpl implements UserService {
                         "bobert",
                         DEFAULT_PASSWORD,
                         "Bob",
-                        "Bakenessergracht 83, 2011JV",
+                        "BE",
+                        "2018",
+                        "Koningin Astridplein 20",
                         "1992-05-17",
                         "asdg",
                         AccountType.CURRENT,
@@ -62,7 +68,9 @@ public class UserServiceImpl implements UserService {
                         "carolx",
                         DEFAULT_PASSWORD,
                         "Carol",
-                        "Bakenessergracht 81, 2011JV",
+                        "NL",
+                        "2011JV",
+                        "Bakenessergracht 81",
                         "1981-12-20",
                         "asdj",
                         AccountType.SAVINGS,
@@ -76,23 +84,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User create(CreateUserDTO user) {
-        // Validate:
-        //   username must be unique
-        //   address must be NL/BE
-        //   age must be >= 18
-        // Generate:
-        //   IBAN per NL format
-        //   default password
-
         logger.info("User: {}", user);
-        Optional<String> country = validCountries.stream().filter((String c) -> user.address().matches(".*\\b" + c + "\\b.*")).findFirst();
-        CountryCode countryCode = CountryCode.getByCode(country.orElse(null));
 
-        logger.info("Found country code {} from input {}", countryCode, user.address());
-
-        if (countryCode == null) {
-            throw new UserCountryInvalidException();
+        if (!addressValidationService.isValid(user.country(), user.postalCode(), user.streetAddress())) {
+            throw new UserAddressInvalidException();
         }
+
+        CountryCode countryCode = CountryCode.getByCode(user.country());
+        logger.info("Found country code {} from input {}", countryCode, user.country());
+
 
         LocalDate dateOfBirth = LocalDate.parse(user.dateOfBirth());
         if (dateOfBirth.isAfter(LocalDate.now().minusYears(18))) {
@@ -112,7 +112,9 @@ public class UserServiceImpl implements UserService {
                 user.username(),
                 DEFAULT_PASSWORD,
                 user.name(),
-                user.address(),
+                user.country(),
+                user.postalCode(),
+                user.streetAddress(),
                 user.dateOfBirth(),
                 iban,
                 user.accountType(),

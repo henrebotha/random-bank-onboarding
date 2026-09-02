@@ -1,5 +1,9 @@
-package com.randombank.onboarding;
+package com.randombank.onboarding.services;
 
+import com.randombank.onboarding.AccountType;
+import com.randombank.onboarding.User;
+import com.randombank.onboarding.exceptions.IncorrectPasswordException;
+import com.randombank.onboarding.exceptions.UserNotFoundException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

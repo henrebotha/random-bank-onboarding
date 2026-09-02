@@ -1,4 +1,7 @@
-package com.randombank.onboarding;
+package com.randombank.onboarding.services;
+
+import com.randombank.onboarding.CreateUserDTO;
+import com.randombank.onboarding.User;
 
 import java.util.List;
 import java.util.UUID;

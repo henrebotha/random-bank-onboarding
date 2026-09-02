@@ -1,5 +1,12 @@
-package com.randombank.onboarding;
+package com.randombank.onboarding.services;
 
+import com.randombank.onboarding.AccountType;
+import com.randombank.onboarding.CreateUserDTO;
+import com.randombank.onboarding.User;
+import com.randombank.onboarding.UserRepository;
+import com.randombank.onboarding.exceptions.UserAddressInvalidException;
+import com.randombank.onboarding.exceptions.UserAlreadyExistsException;
+import com.randombank.onboarding.exceptions.UserTooYoungException;
 import org.iban4j.CountryCode;
 import org.iban4j.Iban;
 import org.slf4j.Logger;
@@ -92,7 +99,6 @@ public class UserServiceImpl implements UserService {
 
         CountryCode countryCode = CountryCode.getByCode(user.country());
         logger.info("Found country code {} from input {}", countryCode, user.country());
-
 
         LocalDate dateOfBirth = LocalDate.parse(user.dateOfBirth());
         if (dateOfBirth.isAfter(LocalDate.now().minusYears(18))) {

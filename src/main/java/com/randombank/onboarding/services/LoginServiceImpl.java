@@ -1,5 +1,8 @@
-package com.randombank.onboarding;
+package com.randombank.onboarding.services;
 
+import com.randombank.onboarding.User;
+import com.randombank.onboarding.exceptions.IncorrectPasswordException;
+import com.randombank.onboarding.exceptions.UserNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

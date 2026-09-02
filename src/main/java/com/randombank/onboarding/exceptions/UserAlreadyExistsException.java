@@ -1,4 +1,4 @@
-package com.randombank.onboarding;
+package com.randombank.onboarding.exceptions;
 
 public class UserAlreadyExistsException extends RuntimeException {
     public UserAlreadyExistsException() {

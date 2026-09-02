@@ -1,5 +1,12 @@
-package com.randombank.onboarding;
+package com.randombank.onboarding.services;
 
+import com.randombank.onboarding.AccountType;
+import com.randombank.onboarding.CreateUserDTO;
+import com.randombank.onboarding.UserRepository;
+import com.randombank.onboarding.exceptions.UserAddressInvalidException;
+import com.randombank.onboarding.exceptions.UserAlreadyExistsException;
+import com.randombank.onboarding.exceptions.UserCountryInvalidException;
+import com.randombank.onboarding.exceptions.UserTooYoungException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -26,8 +33,6 @@ class UserServiceImplTest {
     @Nested
     class UserServiceImplTestCreateUser {
         private final String GOOD_COUNTRY = "NL";
-        private final String GOOD_COUNTRY_PATH = "nld";
-        private final String BAD_COUNTRY = "FR";
 
         private final CreateUserDTO createUserDTO = new CreateUserDTO(
                 "joe",

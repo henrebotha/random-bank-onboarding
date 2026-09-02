@@ -1,5 +1,13 @@
 package com.randombank.onboarding;
 
+import com.randombank.onboarding.exceptions.IncorrectPasswordException;
+import com.randombank.onboarding.exceptions.UserAddressInvalidException;
+import com.randombank.onboarding.exceptions.UserAlreadyExistsException;
+import com.randombank.onboarding.exceptions.UserCountryInvalidException;
+import com.randombank.onboarding.exceptions.UserNotFoundException;
+import com.randombank.onboarding.exceptions.UserTooYoungException;
+import com.randombank.onboarding.services.LoginService;
+import com.randombank.onboarding.services.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -9,6 +9,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
 class UserServiceImplTest {
@@ -18,12 +20,19 @@ class UserServiceImplTest {
     @MockitoBean
     private UserRepository userRepository;
 
+    @MockitoBean
+    private AddressValidationServiceImpl addressValidationService;
+
     @Nested
     class UserServiceImplTestCreateUser {
+        private final String GOOD_COUNTRY = "NL";
+        private final String GOOD_COUNTRY_PATH = "nld";
+        private final String BAD_COUNTRY = "FR";
+
         private final CreateUserDTO createUserDTO = new CreateUserDTO(
                 "joe",
                 "Joseph",
-                "NL",
+                GOOD_COUNTRY,
                 "2011JV",
                 "Bakenessergracht 81",
                 "2000-01-01",
@@ -32,6 +41,7 @@ class UserServiceImplTest {
 
         @BeforeEach
         void setUp() {
+            when(addressValidationService.isValid(anyString(), anyString(), anyString())).thenReturn(true);
         }
 
         @Test
@@ -55,16 +65,18 @@ class UserServiceImplTest {
 
         @Test
         void createInvalidCountry() {
-            CreateUserDTO user = new CreateUserDTO(
-                    createUserDTO.username(),
-                    createUserDTO.name(),
-                    "FR",
-                    createUserDTO.postalCode(),
-                    createUserDTO.streetAddress(),
-                    createUserDTO.dateOfBirth(),
-                    createUserDTO.accountType()
-            );
-            assertThrows(UserCountryInvalidException.class, () -> userService.create(user));
+            when(addressValidationService.isValid(anyString(), anyString(), anyString())).thenThrow(
+                    UserCountryInvalidException.class);
+
+            assertThrows(UserCountryInvalidException.class, () -> userService.create(createUserDTO));
+        }
+
+        @Test
+        void createInvalidAddress() {
+            when(addressValidationService.isValid(anyString(), anyString(), anyString())).thenThrow(
+                    UserAddressInvalidException.class);
+
+            assertThrows(UserAddressInvalidException.class, () -> userService.create(createUserDTO));
         }
 
         @Test

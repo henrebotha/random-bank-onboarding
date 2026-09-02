@@ -1,5 +1,6 @@
 package com.randombank.onboarding.services;
 
+import com.randombank.onboarding.Address;
 import com.randombank.onboarding.exceptions.UserCountryInvalidException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,10 +28,9 @@ public class AddressValidationServiceImpl implements AddressValidationService {
     private boolean useAddressValidationApi;
 
     @Override
-    public boolean isValid(String country, String postalCode, String streetAddress) {
-        String countryPath = getCountryPath(country);
-
-        return validateAddress(countryPath, postalCode, streetAddress);
+    public boolean isValid(Address address) {
+        List<String> grades = fetchGrades(address);
+        return grades.stream().anyMatch("a"::equalsIgnoreCase);
     }
 
     private String getCountryPath(String country) {
@@ -41,7 +41,9 @@ public class AddressValidationServiceImpl implements AddressValidationService {
         };
     }
 
-    protected List<String> getGrades(String countryPath, String postalCode, String streetAddress) {
+    protected List<String> fetchGrades(Address address) {
+        String countryPath = getCountryPath(address.country());
+
         if (!useAddressValidationApi) {
             // Assume address would pass validation
             var result = new ArrayList<String>();
@@ -53,8 +55,8 @@ public class AddressValidationServiceImpl implements AddressValidationService {
                 "{streetAddress}"
         ).queryParam("postcode", "{postalCode}").encode().buildAndExpand(
                 countryPath,
-                streetAddress,
-                postalCode
+                address.streetAddress(),
+                address.postalCode()
         ).toUri();
 
         HttpResponse<String> response;
@@ -81,10 +83,5 @@ public class AddressValidationServiceImpl implements AddressValidationService {
         } catch (JacksonException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private boolean validateAddress(String countryPath, String postalCode, String streetAddress) {
-        List<String> grades = getGrades(countryPath, postalCode, streetAddress);
-        return grades.stream().anyMatch("a"::equalsIgnoreCase);
     }
 }

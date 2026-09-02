@@ -1,6 +1,9 @@
 package com.randombank.onboarding;
 
+import jakarta.persistence.AttributeOverride;
+import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -20,12 +23,23 @@ public final class User {
     private String password;
     @Column(nullable = false)
     private String name;
-    @Column(nullable = false, length = 2)
-    private String country;
-    @Column(nullable = false)
-    private String postalCode;
-    @Column(nullable = false)
-    private String streetAddress;
+    @Embedded
+    @AttributeOverrides(
+            {
+                    @AttributeOverride(
+                            name = "country", column = @Column(
+                            nullable = false, length = 2
+                    )
+                    ),
+                    @AttributeOverride(
+                            name = "postalCode", column = @Column(nullable = false)
+                    ),
+                    @AttributeOverride(
+                            name = "streetAddress", column = @Column(nullable = false)
+                    )
+            }
+    )
+    Address address;
     @Column(nullable = false)
     private String dateOfBirth;
     @Column(nullable = false)
@@ -52,15 +66,15 @@ public final class User {
     }
 
     public void setCountry(String country) {
-        this.country = country;
+        this.address = new Address(country, this.address.postalCode(), this.address.streetAddress());
     }
 
     public void setPostalCode(String postalCode) {
-        this.postalCode = postalCode;
+        this.address = new Address(this.address.country(), postalCode, this.address.streetAddress());
     }
 
     public void setStreetAddress(String streetAddress) {
-        this.streetAddress = streetAddress;
+        this.address = new Address(this.address.country(), this.address.postalCode(), streetAddress);
     }
 
     public void setDateOfBirth(String dateOfBirth) {
@@ -87,9 +101,7 @@ public final class User {
             String username,
             String password,
             String name,
-            String country,
-            String postalCode,
-            String streetAddress,
+            Address address,
             String dateOfBirth,
             String iban,
             AccountType accountType,
@@ -99,9 +111,7 @@ public final class User {
         this.username = username;
         this.password = password;
         this.name = name;
-        this.country = country;
-        this.postalCode = postalCode;
-        this.streetAddress = streetAddress;
+        this.address = address;
         this.dateOfBirth = dateOfBirth;
         this.iban = iban;
         this.accountType = accountType;
@@ -125,15 +135,15 @@ public final class User {
     }
 
     public String country() {
-        return country;
+        return address.country();
     }
 
     public String postalCode() {
-        return postalCode;
+        return address.postalCode();
     }
 
     public String streetAddress() {
-        return streetAddress;
+        return address.streetAddress();
     }
 
     public String dateOfBirth() {
@@ -167,10 +177,7 @@ public final class User {
         ) && Objects.equals(this.password, that.password) && Objects.equals(
                 this.name,
                 that.name
-        ) && Objects.equals(this.country, that.country) && Objects.equals(
-                this.postalCode,
-                that.postalCode
-        ) && Objects.equals(this.streetAddress, that.streetAddress) && Objects.equals(
+        ) && Objects.equals(this.address, that.address) && Objects.equals(
                 this.dateOfBirth,
                 that.dateOfBirth
         ) && Objects.equals(this.iban, that.iban) && Objects.equals(
@@ -181,23 +188,11 @@ public final class User {
 
     @Override
     public int hashCode() {
-        return Objects.hash(
-                id,
-                username,
-                password,
-                name,
-                country,
-                postalCode,
-                streetAddress,
-                dateOfBirth,
-                iban,
-                accountType,
-                accountBalanceCents
-        );
+        return Objects.hash(id, username, password, name, address, dateOfBirth, iban, accountType, accountBalanceCents);
     }
 
     @Override
     public String toString() {
-        return "User[" + "id=" + id + ", " + "username=" + username + ", " + "password=" + password + ", " + "name=" + name + ", " + "country=" + country + "postalCode=" + postalCode + "streetAddress=" + streetAddress + ", " + "dateOfBirth=" + dateOfBirth + ", " + "iban=" + iban + ", " + "accountType=" + accountType + ", " + "accountBalanceCents=" + accountBalanceCents + ']';
+        return "User[" + "id=" + id + ", " + "username=" + username + ", " + "password=" + password + ", " + "name=" + name + ", " + "address=" + address + ", " + "dateOfBirth=" + dateOfBirth + ", " + "iban=" + iban + ", " + "accountType=" + accountType + ", " + "accountBalanceCents=" + accountBalanceCents + ']';
     }
 }

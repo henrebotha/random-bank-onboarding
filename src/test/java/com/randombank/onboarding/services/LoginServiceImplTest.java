@@ -1,6 +1,7 @@
 package com.randombank.onboarding.services;
 
 import com.randombank.onboarding.AccountType;
+import com.randombank.onboarding.Address;
 import com.randombank.onboarding.User;
 import com.randombank.onboarding.exceptions.IncorrectPasswordException;
 import com.randombank.onboarding.exceptions.UserNotFoundException;
@@ -38,9 +39,7 @@ class LoginServiceImplTest {
                 GOOD_USERNAME,
                 GOOD_PASSWORD,
                 "Alice",
-                "NL",
-                "2011JV",
-                "Bakenessergracht 87",
+                new Address("NL", "2011JV", "Bakenessergracht 87"),
                 "1990-01-20",
                 "asdf",
                 AccountType.CURRENT,

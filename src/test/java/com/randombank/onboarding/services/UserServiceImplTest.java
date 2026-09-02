@@ -1,6 +1,7 @@
 package com.randombank.onboarding.services;
 
 import com.randombank.onboarding.AccountType;
+import com.randombank.onboarding.Address;
 import com.randombank.onboarding.CreateUserDTO;
 import com.randombank.onboarding.UserRepository;
 import com.randombank.onboarding.exceptions.UserAddressInvalidException;
@@ -16,7 +17,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -37,16 +38,14 @@ class UserServiceImplTest {
         private final CreateUserDTO createUserDTO = new CreateUserDTO(
                 "joe",
                 "Joseph",
-                GOOD_COUNTRY,
-                "2011JV",
-                "Bakenessergracht 81",
+                new Address(GOOD_COUNTRY, "2011JV", "Bakenessergracht 81"),
                 "2000-01-01",
                 AccountType.CURRENT
         );
 
         @BeforeEach
         void setUp() {
-            when(addressValidationService.isValid(anyString(), anyString(), anyString())).thenReturn(true);
+            when(addressValidationService.isValid(any(Address.class))).thenReturn(true);
         }
 
         @Test
@@ -59,9 +58,7 @@ class UserServiceImplTest {
             CreateUserDTO user = new CreateUserDTO(
                     createUserDTO.username(),
                     createUserDTO.name(),
-                    createUserDTO.country(),
-                    createUserDTO.postalCode(),
-                    createUserDTO.streetAddress(),
+                    createUserDTO.address(),
                     "2020-01-01",
                     createUserDTO.accountType()
             );
@@ -70,16 +67,14 @@ class UserServiceImplTest {
 
         @Test
         void createInvalidCountry() {
-            when(addressValidationService.isValid(anyString(), anyString(), anyString())).thenThrow(
-                    UserCountryInvalidException.class);
+            when(addressValidationService.isValid(any(Address.class))).thenThrow(UserCountryInvalidException.class);
 
             assertThrows(UserCountryInvalidException.class, () -> userService.create(createUserDTO));
         }
 
         @Test
         void createInvalidAddress() {
-            when(addressValidationService.isValid(anyString(), anyString(), anyString())).thenThrow(
-                    UserAddressInvalidException.class);
+            when(addressValidationService.isValid(any(Address.class))).thenThrow(UserAddressInvalidException.class);
 
             assertThrows(UserAddressInvalidException.class, () -> userService.create(createUserDTO));
         }
@@ -89,9 +84,7 @@ class UserServiceImplTest {
             CreateUserDTO user = new CreateUserDTO(
                     "alice",
                     createUserDTO.name(),
-                    createUserDTO.country(),
-                    createUserDTO.postalCode(),
-                    createUserDTO.streetAddress(),
+                    createUserDTO.address(),
                     createUserDTO.dateOfBirth(),
                     createUserDTO.accountType()
             );

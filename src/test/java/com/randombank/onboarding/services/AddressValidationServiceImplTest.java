@@ -1,61 +1,60 @@
 package com.randombank.onboarding.services;
 
+import com.randombank.onboarding.Address;
 import com.randombank.onboarding.exceptions.UserCountryInvalidException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
 
 @SpringBootTest
 class AddressValidationServiceImplTest {
     @Autowired
     private AddressValidationServiceImpl addressValidationService;
 
-    private AutoCloseable closeable;
-
     @BeforeEach
     void setUp() {
-        closeable = MockitoAnnotations.openMocks(this);
     }
 
     @AfterEach
     void tearDown() {
-        try {
-            closeable.close();
-        } catch (Exception e) {
-            throw new RuntimeException("Test error", e);
-        }
     }
 
     @Test
     void isValid() {
-        assertDoesNotThrow(() -> addressValidationService.isValid("NL", "2011JV", "Bakenessergracht 81"));
+        assertTrue(addressValidationService.isValid(new Address("NL", "2011JV", "Bakenessergracht 81")));
+    }
+
+    @Test
+    void isValidBelgium() {
+        assertTrue(addressValidationService.isValid(new Address("BE", "2018", "Koningin Astridplein 20")));
     }
 
     @Test
     void isValidInvalidCountry() {
         assertThrows(
                 UserCountryInvalidException.class,
-                () -> addressValidationService.isValid("FR", "2011JV", "Bakenessergracht 81")
+                () -> addressValidationService.isValid(new Address("FR", "2011JV", "Bakenessergracht 81"))
         );
     }
 
     @Test
     void isValidInvalidAddress() {
         AddressValidationServiceImpl spy = spy(addressValidationService);
-        when(spy.getGrades(anyString(), anyString(), anyString())).thenReturn(List.of("c"));
+        Address address = new Address("NL", "2011JV", "Bakenessergracht 1");
 
-        assertFalse(spy.isValid("NL", "2011JV", "Bakenessergracht 1"));
+        doReturn(List.of("c")).when(spy).fetchGrades(eq(address));
+
+        assertFalse(spy.isValid(address));
     }
 }

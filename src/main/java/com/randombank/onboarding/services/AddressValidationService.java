@@ -1,5 +1,7 @@
 package com.randombank.onboarding.services;
 
+import com.randombank.onboarding.Address;
+
 public interface AddressValidationService {
-    boolean isValid(String country, String postalCode, String streetAddress);
+    boolean isValid(Address address);
 }

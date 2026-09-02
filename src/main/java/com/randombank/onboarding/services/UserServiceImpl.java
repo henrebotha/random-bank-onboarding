@@ -1,6 +1,7 @@
 package com.randombank.onboarding.services;
 
 import com.randombank.onboarding.AccountType;
+import com.randombank.onboarding.Address;
 import com.randombank.onboarding.CreateUserDTO;
 import com.randombank.onboarding.User;
 import com.randombank.onboarding.UserRepository;
@@ -51,9 +52,7 @@ public class UserServiceImpl implements UserService {
                         "alice",
                         DEFAULT_PASSWORD,
                         "Alice",
-                        "NL",
-                        "2011JV",
-                        "Bakenessergracht 87",
+                        new Address("NL", "2011JV", "Bakenessergracht 87"),
                         "1990-01-20",
                         "asdf",
                         AccountType.CURRENT,
@@ -63,9 +62,7 @@ public class UserServiceImpl implements UserService {
                         "bobert",
                         DEFAULT_PASSWORD,
                         "Bob",
-                        "BE",
-                        "2018",
-                        "Koningin Astridplein 20",
+                        new Address("BE", "2018", "Koningin Astridplein 20"),
                         "1992-05-17",
                         "asdg",
                         AccountType.CURRENT,
@@ -75,9 +72,7 @@ public class UserServiceImpl implements UserService {
                         "carolx",
                         DEFAULT_PASSWORD,
                         "Carol",
-                        "NL",
-                        "2011JV",
-                        "Bakenessergracht 81",
+                        new Address("NL", "2011JV", "Bakenessergracht 81"),
                         "1981-12-20",
                         "asdj",
                         AccountType.SAVINGS,
@@ -93,12 +88,12 @@ public class UserServiceImpl implements UserService {
     public User create(CreateUserDTO user) {
         logger.info("User: {}", user);
 
-        if (!addressValidationService.isValid(user.country(), user.postalCode(), user.streetAddress())) {
+        if (!addressValidationService.isValid(user.address())) {
             throw new UserAddressInvalidException();
         }
 
-        CountryCode countryCode = CountryCode.getByCode(user.country());
-        logger.info("Found country code {} from input {}", countryCode, user.country());
+        CountryCode countryCode = CountryCode.getByCode(user.address().country());
+        logger.info("Found country code {} from input {}", countryCode, user.address().country());
 
         LocalDate dateOfBirth = LocalDate.parse(user.dateOfBirth());
         if (dateOfBirth.isAfter(LocalDate.now().minusYears(18))) {
@@ -118,9 +113,7 @@ public class UserServiceImpl implements UserService {
                 user.username(),
                 DEFAULT_PASSWORD,
                 user.name(),
-                user.country(),
-                user.postalCode(),
-                user.streetAddress(),
+                user.address(),
                 user.dateOfBirth(),
                 iban,
                 user.accountType(),

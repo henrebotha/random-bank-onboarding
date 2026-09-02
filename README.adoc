@@ -3,9 +3,28 @@
 
 This repo contains the source for the Onboarding service, a REST API that allows users to register online at the bank.
 
+== Usage
+
+This project uses Maven.
+
+[source,shell]
+----
+./mvnw spring-boot:run
+----
+
 == Development
 
 [source,shell]
 ----
-mvn test
+git clone git@github.com:henrebotha/random-bank-onboarding.git
+cd random-bank-onboarding
+./mvnw compile test
+----
+
+There is an `api.sh` script that can be used to exercise some endpoints of the service.
+
+[source,shell]
+----
+chmod +x api.sh
+./api.sh
 ----

@@ -1,7 +1,5 @@
 package com.randombank.onboarding.services;
 
-import com.randombank.onboarding.AccountType;
-import com.randombank.onboarding.Address;
 import com.randombank.onboarding.CreateUserDTO;
 import com.randombank.onboarding.User;
 import com.randombank.onboarding.UserRepository;
@@ -17,7 +15,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -32,8 +29,6 @@ public class UserServiceImpl implements UserService {
     @Value("${random-bank-onboarding.valid-countries}")
     private List<String> validCountries;
 
-    private final List<User> users = new ArrayList<>();
-
     private static final String DEFAULT_PASSWORD = "1234";
     private static final String BANK_CODE = "RNDB";
 
@@ -45,42 +40,6 @@ public class UserServiceImpl implements UserService {
     }
 
     public UserServiceImpl() {
-        // Sample data for users
-        List<User> newUsers = List.of(
-                new User(
-                        UUID.fromString("77777777-7777-7777-7777-777777777777"),
-                        "alice",
-                        DEFAULT_PASSWORD,
-                        "Alice",
-                        new Address("NL", "2011JV", "Bakenessergracht 87"),
-                        "1990-01-20",
-                        "asdf",
-                        AccountType.CURRENT,
-                        0
-                ), new User(
-                        UUID.fromString("88888888-8888-8888-8888-888888888888"),
-                        "bobert",
-                        DEFAULT_PASSWORD,
-                        "Bob",
-                        new Address("BE", "2018", "Koningin Astridplein 20"),
-                        "1992-05-17",
-                        "asdg",
-                        AccountType.CURRENT,
-                        0
-                ), new User(
-                        UUID.fromString("99999999-9999-9999-9999-999999999999"),
-                        "carolx",
-                        DEFAULT_PASSWORD,
-                        "Carol",
-                        new Address("NL", "2011JV", "Bakenessergracht 81"),
-                        "1981-12-20",
-                        "asdj",
-                        AccountType.SAVINGS,
-                        0
-                )
-        );
-        users.addAll(newUsers);
-
         logger.info("Users in db: {}", findAll());
     }
 
@@ -100,16 +59,13 @@ public class UserServiceImpl implements UserService {
             throw new UserTooYoungException();
         }
 
-        if (users.stream().anyMatch(existingUser -> existingUser.username().equals(user.username()))) {
+        if (repository.existsUserByUsername(user.username())) {
             throw new UserAlreadyExistsException();
         }
-
-        UUID newUuid = UUID.randomUUID();
 
         String iban = new Iban.Builder().countryCode(countryCode).bankCode(BANK_CODE).buildRandom().toString();
 
         User newUser = new User(
-                newUuid,
                 user.username(),
                 DEFAULT_PASSWORD,
                 user.name(),
@@ -119,8 +75,7 @@ public class UserServiceImpl implements UserService {
                 user.accountType(),
                 0
         );
-        users.add(newUser);
-        return newUser;
+        return repository.save(newUser);
     }
 
     @Override

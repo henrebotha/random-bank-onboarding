@@ -5,6 +5,8 @@ import jakarta.persistence.AttributeOverrides;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -16,6 +18,7 @@ import java.util.UUID;
 public final class User {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(nullable = false, columnDefinition = "UUID DEFAULT RANDOM_UUID() PRIMARY KEY")
     private UUID id;
     @Column(nullable = false)
     private String username;
@@ -28,11 +31,11 @@ public final class User {
             {
                     @AttributeOverride(
                             name = "country", column = @Column(
-                            nullable = false, length = 2
+                            nullable = false, length = 2, columnDefinition = "CHAR(2) NOT NULL"
                     )
                     ),
                     @AttributeOverride(
-                            name = "postalCode", column = @Column(nullable = false)
+                            name = "postalCode", column = @Column(nullable = false, length = 7)
                     ),
                     @AttributeOverride(
                             name = "streetAddress", column = @Column(nullable = false)
@@ -42,12 +45,13 @@ public final class User {
     Address address;
     @Column(nullable = false)
     private String dateOfBirth;
-    @Column(nullable = false)
+    @Column(nullable = false, length = 34)
     private String iban;
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private AccountType accountType;
     @Column(nullable = false)
-    private int accountBalanceCents;
+    private long accountBalanceCents;
 
     public void setId(UUID id) {
         this.id = id;
@@ -89,7 +93,7 @@ public final class User {
         this.accountType = accountType;
     }
 
-    public void setAccountBalanceCents(int accountBalanceCents) {
+    public void setAccountBalanceCents(long accountBalanceCents) {
         this.accountBalanceCents = accountBalanceCents;
     }
 
@@ -97,7 +101,6 @@ public final class User {
     }
 
     public User(
-            UUID id,
             String username,
             String password,
             String name,
@@ -105,9 +108,8 @@ public final class User {
             String dateOfBirth,
             String iban,
             AccountType accountType,
-            int accountBalanceCents
+            long accountBalanceCents
     ) {
-        this.id = id;
         this.username = username;
         this.password = password;
         this.name = name;
@@ -158,7 +160,7 @@ public final class User {
         return accountType;
     }
 
-    public int accountBalanceCents() {
+    public long accountBalanceCents() {
         return accountBalanceCents;
     }
 
@@ -193,6 +195,15 @@ public final class User {
 
     @Override
     public String toString() {
-        return "User[" + "id=" + id + ", " + "username=" + username + ", " + "password=" + password + ", " + "name=" + name + ", " + "address=" + address + ", " + "dateOfBirth=" + dateOfBirth + ", " + "iban=" + iban + ", " + "accountType=" + accountType + ", " + "accountBalanceCents=" + accountBalanceCents + ']';
+        return "User[id=%s, username=%s, password=%s, name=%s, address=%s, dateOfBirth=%s, iban=%s, accountType=%s, accountBalanceCents=%d]".formatted(id,
+                username,
+                password,
+                name,
+                address,
+                dateOfBirth,
+                iban,
+                accountType,
+                accountBalanceCents
+        );
     }
 }

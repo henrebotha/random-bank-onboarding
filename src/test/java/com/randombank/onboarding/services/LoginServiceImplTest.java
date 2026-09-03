@@ -12,8 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
-import java.util.UUID;
-
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.eq;
@@ -35,7 +33,6 @@ class LoginServiceImplTest {
     @BeforeEach
     void setUp() {
         final User user = new User(
-                UUID.fromString("77777777-7777-7777-7777-777777777777"),
                 GOOD_USERNAME,
                 GOOD_PASSWORD,
                 "Alice",

@@ -18,6 +18,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest
@@ -81,14 +82,8 @@ class UserServiceImplTest {
 
         @Test
         void createAlreadyExists() {
-            CreateUserDTO user = new CreateUserDTO(
-                    "alice",
-                    createUserDTO.name(),
-                    createUserDTO.address(),
-                    createUserDTO.dateOfBirth(),
-                    createUserDTO.accountType()
-            );
-            assertThrows(UserAlreadyExistsException.class, () -> userService.create(user));
+            when(userRepository.existsUserByUsername(eq(createUserDTO.username()))).thenReturn(true);
+            assertThrows(UserAlreadyExistsException.class, () -> userService.create(createUserDTO));
         }
     }
 

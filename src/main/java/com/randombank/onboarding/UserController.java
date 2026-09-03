@@ -51,19 +51,23 @@ public class UserController {
     }
 
     @GetMapping("/overview/{id}")
-    public User overview(@PathVariable UUID id) {
+    public User overview(
+            @PathVariable UUID id
+    ) {
         logger.info("/overview request: {}", id);
         return userService.findById(id);
     }
 
     @GetMapping("/login")
     public User login(@RequestParam String username, @RequestParam String password) {
-        logger.info("/login request");
+        logger.info("/login request: {} - {}", username, password);
         return loginService.login(username, password);
     }
 
     @ExceptionHandler(value = UserAlreadyExistsException.class)
-    @ResponseStatus(HttpStatus.CONFLICT)
+    @ResponseStatus(
+            HttpStatus.CONFLICT
+    )
     private Map<String, String> handleUserAlreadyExistsException(
             UserAlreadyExistsException e
     ) {
@@ -73,7 +77,9 @@ public class UserController {
     }
 
     @ExceptionHandler(value = UserCountryInvalidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(
+            HttpStatus.BAD_REQUEST
+    )
     private Map<String, String> handleUserCountryInvalidException(
             UserCountryInvalidException e
     ) {
@@ -83,7 +89,9 @@ public class UserController {
     }
 
     @ExceptionHandler(value = UserAddressInvalidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(
+            HttpStatus.BAD_REQUEST
+    )
     private Map<String, String> handleUserAddressInvalidException(
             UserAddressInvalidException e
     ) {
@@ -93,7 +101,9 @@ public class UserController {
     }
 
     @ExceptionHandler(value = UserTooYoungException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(
+            HttpStatus.BAD_REQUEST
+    )
     private Map<String, String> handleUserTooYoungException(
             UserTooYoungException e
     ) {
@@ -103,7 +113,9 @@ public class UserController {
     }
 
     @ExceptionHandler(value = IncorrectPasswordException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ResponseStatus(
+            HttpStatus.UNAUTHORIZED
+    )
     private Map<String, String> handleIncorrectPasswordException(
             IncorrectPasswordException e
     ) {
@@ -113,7 +125,9 @@ public class UserController {
     }
 
     @ExceptionHandler(value = UserNotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseStatus(
+            HttpStatus.NOT_FOUND
+    )
     private Map<String, String> handleUserNotFoundException(
             UserNotFoundException e
     ) {

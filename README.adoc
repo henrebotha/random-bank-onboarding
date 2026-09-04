@@ -3,14 +3,51 @@
 
 This repo contains the source for the Onboarding service, a REST API that allows users to register online at the bank.
 
+== Features
+
+The project spec is only partially implemented.
+I ran into a few difficulties due to my unfamiliarity with Spring Boot's idioms.
+I challenged myself not to use AI for this project.
+
+=== Persistence
+
+It took me a long time to figure out how to make the H2 database actually work.
+What tripped me up was that I was programmatically (using the `UserRepository`) creating a few sample user records during app startup, and for these users I manually specified their ids.
+It turns out that attempting to provide an id for an auto-generated primary key field causes the transaction to fail *silently*, persisting nothing but also not alerting me to the problem!
+
+I was able to fix that thanks to a single StackOverflow comment, but I kind of wish I had thrown this at an AI which might have quickly identified the problem.
+
+=== Database throttling
+
+Emulating the "2 requests per second" legacy database clearly required some kind of global state to track when the most recent query occurred, and to then delay or fail query attempts until 500 milliseconds have elapsed.
+I could not quite figure out how to hook such a global state tracker into Spring Boot's framework.
+I ended up using Hibernate Interceptors, simply because I managed to get them sort of working.
+I was also looking at Spring AOP, JPA transaction locks, and other such mechanisms.
+
+Ultimately I feel like this is not the kind of pattern Spring Boot is really set up to facilitate.
+
+=== Auth
+
+At first, I tried to implement extremely basic, insecure authentication myself.
+I wanted to manually write and read the user's authentication status to and from the session object.
+
+This quickly turned out to be not much easier than just setting up Spring Security.
+However, I found the docs for Spring Security very lacking.
+I never quite managed to figure out how to make it all work.
+
+The branch `security` has the remnants of my attempts here.
+
 == Usage
 
 This project uses Maven.
+Run it as follows.
 
 [source,shell]
 ----
 ./mvnw spring-boot:run
 ----
+
+It will listen at `localhost:8080`.
 
 == Development
 

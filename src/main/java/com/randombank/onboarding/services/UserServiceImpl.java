@@ -11,6 +11,7 @@ import org.iban4j.Iban;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +24,11 @@ public class UserServiceImpl implements UserService {
     private final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
     @Autowired
     private UserRepository repository;
+
     @Autowired
+    @Qualifier("mockAddressValidationServiceImpl")
+    // For the real API, use:
+    // @Qualifier("addressValidationServiceImpl")
     private AddressValidationService addressValidationService;
 
     @Value("${random-bank-onboarding.valid-countries}")
@@ -33,7 +38,12 @@ public class UserServiceImpl implements UserService {
     private static final String BANK_CODE = "RNDB";
 
     @Autowired
-    public UserServiceImpl(UserRepository repository, AddressValidationService addressValidationService) {
+    public UserServiceImpl(
+            UserRepository repository,
+            // For the real API, use:
+            // @Qualifier("addressValidationServiceImpl")
+            @Qualifier("mockAddressValidationServiceImpl") AddressValidationService addressValidationService
+    ) {
         this.repository = repository;
         this.addressValidationService = addressValidationService;
         this();
@@ -51,6 +61,9 @@ public class UserServiceImpl implements UserService {
             throw new UserAddressInvalidException();
         }
 
+        // I have not investigated how this interacts with time zones. For the sake of this project I'm assuming this is
+        // good enough; in a real project I would want to check that we don't get some silly off-by-one results due to a
+        // user perhaps signing up while not in their country of residence.
         LocalDate dateOfBirth = LocalDate.parse(user.dateOfBirth());
         if (dateOfBirth.isAfter(LocalDate.now().minusYears(18))) {
             throw new UserTooYoungException();

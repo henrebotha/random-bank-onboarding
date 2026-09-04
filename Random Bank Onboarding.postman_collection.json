@@ -8,53 +8,38 @@
   },
   "item": [
     {
-      "name": "Get data",
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "type": "text/javascript",
-            "exec": [
-              "pm.test(\"Status code is 200\", function () {\n    pm.response.to.have.status(200);\n});"
-            ]
-          }
-        }
-      ],
+      "name": "Overview",
       "request": {
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "{{host}}/get",
+          "raw": "{{host}}/overview/:id",
           "host": [
             "{{host}}"
           ],
           "path": [
-            "get"
+            "overview",
+            ":id"
+          ],
+          "variable": [
+            {
+              "key": "id",
+              "value": "77777777-7777-7777-7777-777777777777"
+            }
           ]
         },
-        "description": "This is a GET request and it is used to \"get\" data from an endpoint. There is no request body for a GET request, but you can use query parameters to help specify the resource you want data on (e.g., in this request, we have `id=1`).\n\nA successful GET response will have a `200 OK` status, and should include some kind of response body - for example, HTML web content or JSON data."
+        "description": "Get an overview of the user with the specified `id`.\n\nNote that this is not what the spec required; the endpoint is supposed to be merely `/overview`, and it is to identify the user via the login state, thus ensuring a user can only see their own overview."
       },
       "response": []
     },
     {
-      "name": "Post data",
-      "event": [
-        {
-          "listen": "test",
-          "script": {
-            "type": "text/javascript",
-            "exec": [
-              "pm.test(\"Successful POST request\", function () {\n    pm.expect(pm.response.code).to.be.oneOf([200, 201]);\n});\n"
-            ]
-          }
-        }
-      ],
+      "name": "Register",
       "request": {
         "method": "POST",
         "header": [],
         "body": {
           "mode": "raw",
-          "raw": "{\n\t\"name\": \"Add your name in the body\"\n}",
+          "raw": "{\n    \"username\": \"joe\",\n    \"name\": \"Joseph\",\n    \"address\": {\n        \"country\": \"NL\",\n        \"postalCode\": \"2011JV\",\n        \"streetAddress\": \"Bakenessergracht 79\"\n    },\n    \"dateOfBirth\": \"2000-01-09\",\n    \"accountType\": \"SAVINGS\"\n}",
           "options": {
             "raw": {
               "language": "json"
@@ -62,23 +47,98 @@
           }
         },
         "url": {
-          "raw": "{{host}}/post",
+          "raw": "{{host}}/register",
           "host": [
             "{{host}}"
           ],
           "path": [
-            "post"
+            "register"
           ]
         },
-        "description": "This is a POST request, submitting data to an API via the request body. This request submits JSON data, and the data is reflected in the response.\n\nA successful POST request typically returns a `200 OK` or `201 Created` response code."
+        "description": "Sign up a new user.\n\nThe body should comprise the following:\n\n``` json\n{\n    \"username\": \"joe\",\n    \"name\": \"Joseph Collins\",\n    \"address\": {\n        \"country\": \"NL\", // NL or BE\n        \"postalCode\": \"2011JV\", // valid postal code for the country\n        \"streetAddress\": \"Bakenessergracht 79\"\n    },\n    \"dateOfBirth\": \"2000-01-09\", // YYYY-MM-DD\n    \"accountType\": \"SAVINGS\" // \"SAVINGS\" or \"CURRENT\"\n}\n\n ```"
+      },
+      "response": [
+        {
+          "name": "Register joe",
+          "originalRequest": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"joe\",\n  \"name\": \"Joseph\",\n  \"address\": {\n    \"country\": \"NL\",\n    \"postalCode\": \"2011JV\",\n    \"streetAddress\": \"Bakenessergracht 79\"\n  },\n  \"dateOfBirth\": \"2000-01-09\",\n  \"accountType\": \"SAVINGS\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{host}}/register",
+              "host": [
+                "{{host}}"
+              ],
+              "path": [
+                "register"
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "content-type",
+              "value": "application/json"
+            },
+            {
+              "key": "transfer-encoding",
+              "value": "chunked"
+            },
+            {
+              "key": "date",
+              "value": "Sat, 29 Aug 2026 10:11:12 GMT"
+            },
+            {
+              "key": "keep-alive",
+              "value": "timeout=60"
+            },
+            {
+              "key": "connection",
+              "value": "keep-alive"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n  \"timestamp\": \"2026-08-29T10:11:12.005Z\",\n  \"status\": 404,\n  \"error\": \"Not Found\",\n  \"path\": \"/register\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Login",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{host}}/login?username=alice&password=1234",
+          "host": [
+            "{{host}}"
+          ],
+          "path": [
+            "login"
+          ],
+          "query": [
+            {
+              "key": "username",
+              "value": "alice"
+            },
+            {
+              "key": "password",
+              "value": "1234"
+            }
+          ]
+        },
+        "description": "Log in a user, using username and password.\n\nNote: This endpoint does not currently work. It will retrieve the user, but the authentication status is not actually persisted anywhere, making it impossible for the app to actually guard `/overview` based on login status."
       },
       "response": []
-    }
-  ],
-  "variable": [
-    {
-      "key": "host",
-      "value": ""
     }
   ]
 }

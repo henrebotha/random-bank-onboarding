@@ -30,7 +30,7 @@ class UserServiceImplTest {
     private UserRepository userRepository;
 
     @MockitoBean
-    private AddressValidationServiceImpl addressValidationService;
+    private MockAddressValidationServiceImpl addressValidationService;
 
     @Nested
     class UserServiceImplTestCreateUser {

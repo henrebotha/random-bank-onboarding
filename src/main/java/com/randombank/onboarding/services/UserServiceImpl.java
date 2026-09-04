@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -51,9 +52,6 @@ public class UserServiceImpl implements UserService {
             throw new UserAddressInvalidException();
         }
 
-        CountryCode countryCode = CountryCode.getByCode(user.address().country());
-        logger.info("Found country code {} from input {}", countryCode, user.address().country());
-
         LocalDate dateOfBirth = LocalDate.parse(user.dateOfBirth());
         if (dateOfBirth.isAfter(LocalDate.now().minusYears(18))) {
             throw new UserTooYoungException();
@@ -63,11 +61,11 @@ public class UserServiceImpl implements UserService {
             throw new UserAlreadyExistsException();
         }
 
-        String iban = new Iban.Builder().countryCode(countryCode).bankCode(BANK_CODE).buildRandom().toString();
+        String iban = new Iban.Builder().countryCode(CountryCode.NL).bankCode(BANK_CODE).buildRandom().toString();
 
         User newUser = new User(
                 user.username(),
-                DEFAULT_PASSWORD,
+                new BCryptPasswordEncoder().encode(DEFAULT_PASSWORD),
                 user.name(),
                 user.address(),
                 user.dateOfBirth(),

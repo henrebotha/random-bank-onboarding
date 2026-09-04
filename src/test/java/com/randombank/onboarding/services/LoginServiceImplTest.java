@@ -5,14 +5,17 @@ import com.randombank.onboarding.Address;
 import com.randombank.onboarding.User;
 import com.randombank.onboarding.exceptions.IncorrectPasswordException;
 import com.randombank.onboarding.exceptions.UserNotFoundException;
+import jakarta.servlet.http.HttpSession;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
@@ -25,6 +28,8 @@ class LoginServiceImplTest {
     @MockitoBean
     private UserService userService;
 
+    private HttpSession session;
+
     private final String GOOD_PASSWORD = "1234";
     private final String BAD_PASSWORD = "1235";
     private final String GOOD_USERNAME = "alice";
@@ -32,6 +37,7 @@ class LoginServiceImplTest {
 
     @BeforeEach
     void setUp() {
+        session = new MockHttpSession();
         final User user = new User(
                 GOOD_USERNAME,
                 GOOD_PASSWORD,
@@ -52,16 +58,19 @@ class LoginServiceImplTest {
 
     @Test
     void login() {
-        assertDoesNotThrow(() -> loginService.login(GOOD_USERNAME, GOOD_PASSWORD));
+        loginService.login(session, GOOD_USERNAME, GOOD_PASSWORD);
+        assertEquals(GOOD_USERNAME, session.getAttribute("loggedInUser"));
     }
 
     @Test
     void loginUnknownUser() {
-        assertThrows(UserNotFoundException.class, () -> loginService.login(BAD_USERNAME, GOOD_PASSWORD));
+        assertThrows(UserNotFoundException.class, () -> loginService.login(session, BAD_USERNAME, GOOD_PASSWORD));
+        assertNull(session.getAttribute("loggedInUser"));
     }
 
     @Test
     void loginIncorrectPassword() {
-        assertThrows(IncorrectPasswordException.class, () -> loginService.login(GOOD_USERNAME, BAD_PASSWORD));
+        assertThrows(IncorrectPasswordException.class, () -> loginService.login(session, GOOD_USERNAME, BAD_PASSWORD));
+        assertNull(session.getAttribute("loggedInUser"));
     }
 }

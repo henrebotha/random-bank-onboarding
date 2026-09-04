@@ -13,7 +13,7 @@ public class OnboardingApplication {
         return "Hello World!";
     }
 
-    public static void main(String[] args) {
+    static void main(String[] args) {
         SpringApplication.run(OnboardingApplication.class, args);
     }
 }

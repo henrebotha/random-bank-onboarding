@@ -3,6 +3,7 @@ package com.randombank.onboarding.services;
 import com.randombank.onboarding.User;
 import com.randombank.onboarding.exceptions.IncorrectPasswordException;
 import com.randombank.onboarding.exceptions.UserNotFoundException;
+import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,8 @@ public class LoginServiceImpl implements LoginService {
     }
 
     @Override
-    public User login(String username, String password) {
+    public User login(HttpSession session, String username, String password) {
+        logger.info("session: {}", session);
         User user = userService.findByUsername(username);
 
         if (user == null) {

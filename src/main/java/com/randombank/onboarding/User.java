@@ -10,12 +10,16 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
 @Entity(name = "app_user")
-public final class User {
+public final class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(nullable = false, columnDefinition = "UUID DEFAULT RANDOM_UUID() PRIMARY KEY")
@@ -205,5 +209,21 @@ public final class User {
                 accountType,
                 accountBalanceCents
         );
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        // TODO
+        return List.of();
+    }
+
+    @Override
+    public String getPassword() {
+        return this.password();
+    }
+
+    @Override
+    public String getUsername() {
+        return this.username();
     }
 }

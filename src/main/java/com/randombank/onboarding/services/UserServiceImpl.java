@@ -51,9 +51,6 @@ public class UserServiceImpl implements UserService {
             throw new UserAddressInvalidException();
         }
 
-        CountryCode countryCode = CountryCode.getByCode(user.address().country());
-        logger.info("Found country code {} from input {}", countryCode, user.address().country());
-
         LocalDate dateOfBirth = LocalDate.parse(user.dateOfBirth());
         if (dateOfBirth.isAfter(LocalDate.now().minusYears(18))) {
             throw new UserTooYoungException();
@@ -63,7 +60,7 @@ public class UserServiceImpl implements UserService {
             throw new UserAlreadyExistsException();
         }
 
-        String iban = new Iban.Builder().countryCode(countryCode).bankCode(BANK_CODE).buildRandom().toString();
+        String iban = new Iban.Builder().countryCode(CountryCode.NL).bankCode(BANK_CODE).buildRandom().toString();
 
         User newUser = new User(
                 user.username(),
